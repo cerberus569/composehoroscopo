@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.mauro.composehoroscopo"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.mauro.composehoroscopo"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -56,7 +56,7 @@ android {
 dependencies {
 
     val cameraVersion = "1.2.3"
-    val hilt_version = "2.42"
+    val hilt_version = "2.48"
 
 
     // Navigation for Jetpack Compose
@@ -81,17 +81,20 @@ dependencies {
     testImplementation ("io.mockk:mockk:1.12.3")
 
     //en vez de espreso
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
 
-    androidTestImplementation ("com.google.dagger:hilt-android-testing:2.48")
+
 
     androidTestImplementation ("com.google.dagger:hilt-android-testing:2.48")
+
+
 
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
     implementation("com.google.dagger:hilt-android:2.48")
     kapt ("com.google.dagger:hilt-android-compiler:$hilt_version")
+
+    implementation ("androidx.compose.material:material-icons-extended")
+
 
 
 
