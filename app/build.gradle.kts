@@ -43,7 +43,8 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.11"
+
     }
     packaging {
         resources {
@@ -55,45 +56,43 @@ android {
 
 dependencies {
 
-    val cameraVersion = "1.2.3"
-    val hilt_version = "2.48"
 
 
     // Navigation for Jetpack Compose
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.navigation.compose)
 
 // Hilt integration with Navigation in Compose
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation(libs.androidx.hilt.navigation.compose)
     //Retrofit si
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.3.1")
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.logging.interceptor)
 
     //Camera X si
-    implementation ("androidx.camera:camera-core:${cameraVersion}")
-    implementation ("androidx.camera:camera-camera2:${cameraVersion}")
-    implementation ("androidx.camera:camera-lifecycle:${cameraVersion}")
-    implementation ("androidx.camera:camera-view:${cameraVersion}")
-    implementation ("androidx.camera:camera-extensions:${cameraVersion}")
+    implementation (libs.androidx.camera.core)
+    implementation (libs.androidx.camera.camera2)
+    implementation (libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+    implementation (libs.androidx.camera.extensions)
 
     //UnitTesting
-    testImplementation ("io.kotlintest:kotlintest-runner-junit5:3.4.2")
-    testImplementation ("io.mockk:mockk:1.12.3")
+    testImplementation (libs.kotlintest.runner.junit5)
+    testImplementation (libs.mockk)
 
     //en vez de espreso
 
 
 
 
-    androidTestImplementation ("com.google.dagger:hilt-android-testing:2.48")
+    androidTestImplementation (libs.hilt.android.testing)
 
 
 
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
-    implementation("com.google.dagger:hilt-android:2.48")
-    kapt ("com.google.dagger:hilt-android-compiler:$hilt_version")
+    kaptAndroidTest(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
+    kapt (libs.hilt.android.compiler)
 
-    implementation ("androidx.compose.material:material-icons-extended")
+    implementation (libs.androidx.material.icons.extended)
 
 
 
