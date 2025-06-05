@@ -37,19 +37,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme // <--- IMPORTANTE: Importa TU tema
-
+import com.mauro.composehoroscopo.AppDestinations
+import com.mauro.composehoroscopo.BottomNavigationItem
 
 // Define tus rutas de navegación (puedes poner esto en un archivo separado)
-object AppDestinations {
-    const val HOME_ROUTE = "home"
-    const val FAVORITES_ROUTE = "favorites"
-    const val SETTINGS_ROUTE = "settings"
-}
 
-data class BottomNavigationItem(
-    val label: String,
-    val icon: ImageVector,
-    val route: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
