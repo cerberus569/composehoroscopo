@@ -42,7 +42,7 @@ import com.mauro.composehoroscopo.BottomNavigationItem
 
 // Define tus rutas de navegación (puedes poner esto en un archivo separado)
 
-)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
