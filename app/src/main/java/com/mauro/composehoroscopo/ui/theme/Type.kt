@@ -48,6 +48,15 @@ val Typography = Typography(
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
+    ),
+
+            headlineMedium = TextStyle(
+            fontFamily = dancingScriptFamily, // <--- ¡ASEGÚRATE DE QUE ESTO ESTÉ AQUÍ!
+    fontWeight = FontWeight.Bold,    // O FontWeight.Normal, según lo que quieras y si tu fuente lo soporta
+    fontSize = 28.sp,                // O el tamaño que definiste
+    lineHeight = 36.sp,
+    letterSpacing = 0.sp
+    // ... más propiedades si es necesario
     )
     /* Otros estilos de texto predeterminados
     titleLarge = TextStyle(

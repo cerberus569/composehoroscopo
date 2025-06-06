@@ -52,9 +52,9 @@ fun MainScreen(navController: NavController) {
 
     // Items para la barra de navegación inferior
     val navigationItems = listOf(
-        BottomNavigationItem("Inicio", Icons.Filled.Home, AppDestinations.HOME_ROUTE),
-        BottomNavigationItem("Favoritos", Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
-        BottomNavigationItem("Ajustes", Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
+        BottomNavigationItem("horoscopo", Icons.Filled.Home, AppDestinations.HOME_ROUTE),
+        BottomNavigationItem("suerte", Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
+        BottomNavigationItem("palmistry", Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
     )
 
     // Nota: MainScreen en sí misma no necesita estar envuelta por ComposehoroscopoTheme aquí,
@@ -181,9 +181,9 @@ fun HoroscopeContentPreview() {
 fun AppBottomNavigationBarPreview() {
     val navController = rememberNavController()
     val navigationItems = listOf(
-        BottomNavigationItem("Inicio", Icons.Filled.Home, AppDestinations.HOME_ROUTE),
-        BottomNavigationItem("Favoritos", Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
-        BottomNavigationItem("Ajustes", Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
+        BottomNavigationItem("horoscopo", Icons.Filled.Home, AppDestinations.HOME_ROUTE),
+        BottomNavigationItem("suerte", Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
+        BottomNavigationItem("palmistry", Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
     )
     ComposehoroscopoTheme { // <--- APLICA TU TEMA PERSONALIZADO AQUÍ
         AppBottomNavigationBar(items = navigationItems, navController = navController)
