@@ -1,7 +1,6 @@
 package com.mauro.composehoroscopo.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-// import androidx.compose.foundation.layout.Box // No se usa directamente, se puede quitar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,63 +17,67 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme // Se usará para acceder a typography y colorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-// import androidx.compose.runtime.mutableStateOf // No se usa directamente, se puede quitar
-// import androidx.compose.runtime.remember // No se usa directamente, se puede quitar
-// import androidx.compose.runtime.setValue // No se usa directamente, se puede quitar
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource // <-- CAMBIO AQUÍ: Import necesario
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme // <--- IMPORTANTE: Importa TU tema
 import com.mauro.composehoroscopo.AppDestinations
 import com.mauro.composehoroscopo.BottomNavigationItem
-
-// Define tus rutas de navegación (puedes poner esto en un archivo separado)
-
-
+import com.mauro.composehoroscopo.R // <-- CAMBIO AQUÍ: Importa la clase R de tu proyecto
+import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController) {
-    // Lista de items para el LazyColumn (ejemplo)
     val itemsList = (1..50).map { "Elemento número $it" }
 
-    // Items para la barra de navegación inferior
+    // <-- CAMBIO AQUÍ: La lista ahora usa stringResource para obtener los textos
+    // Esto funciona porque la lista se está declarando DENTRO de un Composable (@Composable).
     val navigationItems = listOf(
-        BottomNavigationItem("horoscopo", Icons.Filled.Home, AppDestinations.HOME_ROUTE),
-        BottomNavigationItem("suerte", Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
-        BottomNavigationItem("palmistry", Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
+        BottomNavigationItem(
+            label = stringResource(id = R.string.horoscope),
+            icon = Icons.Filled.Home,
+            route = AppDestinations.HOME_ROUTE
+        ),
+        BottomNavigationItem(
+            label = stringResource(id = R.string.luck),
+            icon = Icons.Filled.Favorite,
+            route = AppDestinations.FAVORITES_ROUTE
+        ),
+        BottomNavigationItem(
+            label = stringResource(id = R.string.palmistry),
+            icon = Icons.Filled.Settings,
+            route = AppDestinations.SETTINGS_ROUTE
+        )
     )
 
-    // Nota: MainScreen en sí misma no necesita estar envuelta por ComposehoroscopoTheme aquí,
-    // porque se asume que quien LLAMA a MainScreen (ej. tu MainActivity o tu sistema de navegación)
-    // ya ha aplicado ComposehoroscopoTheme a un nivel superior.
     ComposehoroscopoTheme {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
-                            text = "Horóscopo",
-                            style = MaterialTheme.typography.headlineMedium, // Hereda de ComposehoroscopoTheme
+                            // <-- CAMBIO AQUÍ: El título también usa un recurso de string
+                            text = stringResource(id = R.string.main_title_horoscope),
+                            style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer, // Hereda de ComposehoroscopoTheme
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer // Hereda de ComposehoroscopoTheme
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 )
             },
@@ -98,14 +101,14 @@ fun HoroscopeContent(itemsList: List<String>, contentPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(contentPadding) // Aplica el padding del Scaffold
-            .padding(horizontal = 16.dp), // Padding adicional si lo deseas
-        verticalArrangement = Arrangement.spacedBy(8.dp) // Espacio entre items
+            .padding(contentPadding)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(itemsList) { item ->
             Text(
                 text = item,
-                style = MaterialTheme.typography.bodyLarge, // Hereda de ComposehoroscopoTheme
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 12.dp)
@@ -120,8 +123,8 @@ fun AppBottomNavigationBar(
     navController: NavController
 ) {
     BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant, // Hereda de ComposehoroscopoTheme
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant // Hereda de ComposehoroscopoTheme
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -131,9 +134,7 @@ fun AppBottomNavigationBar(
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -144,13 +145,13 @@ fun AppBottomNavigationBar(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.label,
-                        tint = if (currentRoute == item.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) // Hereda
+                        contentDescription = item.label, // El contentDescription también se actualiza
+                        tint = if (currentRoute == item.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                     Text(
                         text = item.label,
-                        style = MaterialTheme.typography.labelSmall, // Hereda
-                        color = if (currentRoute == item.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) // Hereda
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (currentRoute == item.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -163,7 +164,7 @@ fun AppBottomNavigationBar(
 @Composable
 fun MainScreenPreview() {
     val navController = rememberNavController()
-    ComposehoroscopoTheme { // <--- APLICA TU TEMA PERSONALIZADO AQUÍ
+    ComposehoroscopoTheme {
         MainScreen(navController = navController)
     }
 }
@@ -171,7 +172,7 @@ fun MainScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HoroscopeContentPreview() {
-    ComposehoroscopoTheme { // <--- APLICA TU TEMA PERSONALIZADO AQUÍ
+    ComposehoroscopoTheme {
         HoroscopeContent(itemsList = (1..5).map { "Item $it" }, contentPadding = PaddingValues(0.dp))
     }
 }
@@ -180,12 +181,13 @@ fun HoroscopeContentPreview() {
 @Composable
 fun AppBottomNavigationBarPreview() {
     val navController = rememberNavController()
+    // <-- CAMBIO AQUÍ: El preview también debe usar los recursos para ser consistente
     val navigationItems = listOf(
-        BottomNavigationItem("horoscopo", Icons.Filled.Home, AppDestinations.HOME_ROUTE),
-        BottomNavigationItem("suerte", Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
-        BottomNavigationItem("palmistry", Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
+        BottomNavigationItem(stringResource(id = R.string.horoscope), Icons.Filled.Home, AppDestinations.HOME_ROUTE),
+        BottomNavigationItem(stringResource(id = R.string.luck), Icons.Filled.Favorite, AppDestinations.FAVORITES_ROUTE),
+        BottomNavigationItem(stringResource(id = R.string.palmistry), Icons.Filled.Settings, AppDestinations.SETTINGS_ROUTE)
     )
-    ComposehoroscopoTheme { // <--- APLICA TU TEMA PERSONALIZADO AQUÍ
+    ComposehoroscopoTheme {
         AppBottomNavigationBar(items = navigationItems, navController = navController)
     }
 }

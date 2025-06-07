@@ -6,6 +6,7 @@
     <string name="horoscope">Horoscope</string>
     <string name="palmistry">Palmistry</string>
     <string name="luck">Luck</string>
+    <string name="main_title_horoscope">Horoscope</string>
 
     <!--    Horoscope-->
     <string name="aries">Aries</string>
