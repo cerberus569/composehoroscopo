@@ -111,7 +111,7 @@ private val AppDarkColorScheme = darkColorScheme(
 @Composable
 fun ComposehoroscopoTheme( // Nombre de tu función de tema
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true, // Mantienes tu preferencia por dynamicColor
+    dynamicColor: Boolean = false, // Mantienes tu preferencia por dynamicColor
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
