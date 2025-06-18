@@ -60,7 +60,7 @@ fun MainScreen(navController: NavController) {
     )
 
     // APLICA EL TEMA, ASEGÚRATE DE QUE dynamicColor ESTÉ EN false PARA USAR TUS COLORES
-    ComposehoroscopoTheme(dynamicColor = false) {
+    ComposehoroscopoTheme(dynamicColor = false,darkTheme = true) {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
@@ -223,7 +223,7 @@ fun AppBottomNavigationBarPreview() {
         BottomNavigationItem("Suerte", R.drawable.ic_cards, AppDestinations.FAVORITES_ROUTE),
         BottomNavigationItem("Quiromancia", R.drawable.ic_hand, AppDestinations.SETTINGS_ROUTE)
     )
-    ComposehoroscopoTheme(darkTheme = false) {
+    ComposehoroscopoTheme(darkTheme = true) {
         AppBottomNavigationBar(
             items = navigationItems,
             navController = navController,
