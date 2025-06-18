@@ -18,11 +18,11 @@ class MainActivity : ComponentActivity() {
                 // 2. Creamos el controlador de navegación.
                 // `rememberNavController()` crea y recuerda el controlador
                 // para que no se pierda si la vista se redibuja.
-                val navController = rememberNavController()
+
 
                 // 3. ¡AQUÍ ESTÁ LA MAGIA!
                 // Llamamos a tu vista `MainScreen` y le pasamos el `navController` que acabamos de crear.
-                MainScreen(navController = navController)
+                MainScreen()
             }
         }
     }
