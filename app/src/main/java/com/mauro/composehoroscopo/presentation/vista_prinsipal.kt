@@ -1,14 +1,20 @@
 package com.mauro.composehoroscopo.presentation
 
+import androidx.compose.foundation.Image // CAMBIO: Import necesario
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row // CAMBIO: Import necesario
+import androidx.compose.foundation.layout.Spacer // CAMBIO: Import necesario
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width // CAMBIO: Import necesario
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card // CAMBIO: Import necesario para un mejor diseño
+import androidx.compose.material3.CardDefaults // CAMBIO: Import necesario
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,13 +44,12 @@ import androidx.navigation.compose.rememberNavController
 import com.mauro.composehoroscopo.AppDestinations
 import com.mauro.composehoroscopo.BottomNavigationItem
 import com.mauro.composehoroscopo.R
+import com.mauro.composehoroscopo.domain.model.HoroscopeInfo // CAMBIO: Importamos nuestro modelo
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 
-// --- PASO 1: MODIFICAR MainScreen PARA QUE USE UN NavHost ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() { // Ya no necesita recibir el NavController, lo creará adentro
-    // Creamos el NavController aquí para que sea recordado durante la vida del MainScreen
+fun MainScreen() {
     val navController = rememberNavController()
 
     val navigationItems = listOf(
@@ -86,62 +91,91 @@ fun MainScreen() { // Ya no necesita recibir el NavController, lo creará adentr
             bottomBar = {
                 AppBottomNavigationBar(
                     items = navigationItems,
-                    navController = navController, // Le pasamos el NavController a la barra
+                    navController = navController,
                     iconSize = 22.dp
                 )
             }
         ) { innerPadding ->
-            // --- PASO 2: USAR NavHost COMO CONTENIDO DEL SCAFFOLD ---
-            // El NavHost se encargará de mostrar la pantalla correcta.
             AppNavigationHost(navController = navController, paddingValues = innerPadding)
         }
     }
 }
 
-// --- PASO 3: CREAR EL NavHost ---
 @Composable
 fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingValues) {
     NavHost(
         navController = navController,
-        startDestination = AppDestinations.HOME_ROUTE, // La pantalla inicial
-        modifier = Modifier.padding(paddingValues) // Aplicamos el padding del Scaffold
+        startDestination = AppDestinations.HOME_ROUTE,
+        modifier = Modifier.padding(paddingValues)
     ) {
-        // Definimos cada "pantalla" de nuestra app
         composable(AppDestinations.HOME_ROUTE) {
+            // CAMBIO: Ahora HoroscopeContent mostrará los datos reales
             HoroscopeContent()
         }
         composable(AppDestinations.FAVORITES_ROUTE) {
-            LuckScreen() // Pantalla de "Suerte"
+            LuckScreen()
         }
         composable(AppDestinations.SETTINGS_ROUTE) {
-            PalmistryScreen() // Pantalla de "Quiromancia"
+            PalmistryScreen()
         }
     }
 }
 
-// --- PANTALLAS DE EJEMPLO ---
-
+// --- CAMBIO PRINCIPAL: ACTUALIZACIÓN DE HoroscopeContent ---
 @Composable
 fun HoroscopeContent() {
-    val itemsList = (1..50).map { "Elemento de Horóscopo $it" }
+    // Obtenemos todos los objetos de nuestro sealed class de forma programática.
+    // Esto es muy útil porque si en el futuro añades un nuevo signo, se agregará a la lista automáticamente.
+    val horoscopeList = HoroscopeInfo::class.sealedSubclasses.mapNotNull { it.objectInstance }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        // Aumentamos el espaciado para que las tarjetas se vean mejor
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        // Añadimos padding vertical para que no se pegue a la barra superior e inferior
+        contentPadding = PaddingValues(vertical = 16.dp)
     ) {
-        items(itemsList) { item ->
+        // Usamos la lista real de horóscopos
+        items(horoscopeList) { horoscope ->
+            // Llamamos a un nuevo Composable para dibujar cada elemento
+            HoroscopeItem(horoscope = horoscope)
+        }
+    }
+}
+
+// --- NUEVO COMPOSABLE: HoroscopeItem ---
+// Es una buena práctica crear un Composable específico para los elementos de una lista.
+// Esto hace el código más limpio y reutilizable.
+@Composable
+fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = horoscope.img),
+                contentDescription = stringResource(id = horoscope.name), // Descripción para accesibilidad
+                modifier = Modifier.size(64.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp)) // Espacio entre imagen y texto
             Text(
-                text = item,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                text = stringResource(id = horoscope.name),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
 }
 
+
+// --- PANTALLAS DE EJEMPLO (Sin cambios) ---
 @Composable
 fun LuckScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -157,7 +191,7 @@ fun PalmistryScreen() {
 }
 
 
-// --- TU BARRA DE NAVEGACIÓN (SIN CAMBIOS, YA ESTABA BIEN) ---
+// --- BARRA DE NAVEGACIÓN (Sin cambios) ---
 @Composable
 fun AppBottomNavigationBar(
     items: List<BottomNavigationItem>,
@@ -206,8 +240,11 @@ fun AppBottomNavigationBar(
 }
 
 
-// --- PREVIEWS (ACTUALIZADOS PARA REFLEJAR LA NUEVA ESTRUCTURA) ---
+// --- PREVIEWS ACTUALIZADOS ---
 
+// Las Previews de MainScreen ya funcionan correctamente, porque `MainScreen`
+// renderiza el `NavHost`, que por defecto muestra `HoroscopeContent`.
+// Así que ahora verás la lista real en las previews.
 @Preview(showBackground = true, name = "Main Screen Dark")
 @Composable
 fun MainScreenDarkPreview() {
@@ -221,5 +258,16 @@ fun MainScreenDarkPreview() {
 fun MainScreenLightPreview() {
     ComposehoroscopoTheme(darkTheme = false) {
         MainScreen()
+    }
+}
+
+// CAMBIO: AÑADIMOS UNA PREVIEW ESPECÍFICA PARA NUESTRO NUEVO HoroscopeItem
+// Esto es muy útil para diseñar y probar el item de forma aislada.
+@Preview(showBackground = true)
+@Composable
+fun HoroscopeItemPreview() {
+    ComposehoroscopoTheme(darkTheme = true) {
+        // Usamos un horóscopo de ejemplo para la preview
+        HoroscopeItem(horoscope = HoroscopeInfo.Aries)
     }
 }
