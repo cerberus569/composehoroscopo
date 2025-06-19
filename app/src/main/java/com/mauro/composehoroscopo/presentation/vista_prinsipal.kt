@@ -3,16 +3,17 @@ package com.mauro.composehoroscopo.presentation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column // CAMBIO: Import necesario
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Spacer // CAMBIO: Import necesario
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height // CAMBIO: Import necesario
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells // CAMBIO: Import necesario
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid // CAMBIO: Import necesario
+import androidx.compose.foundation.lazy.grid.items // CAMBIO: Import necesario
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -120,60 +121,60 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
     }
 }
 
+// --- CAMBIO PRINCIPAL 1: USAR LazyVerticalGrid ---
 @Composable
 fun HoroscopeContent() {
-    // --- CORRECCIÓN CLAVE ---
-    // Reemplazamos el método de reflexión que causa el crash por una lista explícita.
-    // Esta es la forma segura y recomendada de hacerlo.
     val horoscopeList = listOf(
-        HoroscopeInfo.Aries,
-        HoroscopeInfo.Taurus,
-        HoroscopeInfo.Gemini,
-        HoroscopeInfo.Cancer,
-        HoroscopeInfo.Leo,
-        HoroscopeInfo.Virgo,
-        HoroscopeInfo.Libra,
-        HoroscopeInfo.Scorpio,
-        HoroscopeInfo.Sagittarius,
-        HoroscopeInfo.Capricorn,
-        HoroscopeInfo.Aquarius,
-        HoroscopeInfo.Pisces
+        HoroscopeInfo.Aries, HoroscopeInfo.Taurus, HoroscopeInfo.Gemini,
+        HoroscopeInfo.Cancer, HoroscopeInfo.Leo, HoroscopeInfo.Virgo,
+        HoroscopeInfo.Libra, HoroscopeInfo.Scorpio, HoroscopeInfo.Sagittarius,
+        HoroscopeInfo.Capricorn, HoroscopeInfo.Aquarius, HoroscopeInfo.Pisces
     )
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+    // Usamos LazyVerticalGrid en lugar de LazyColumn
+    LazyVerticalGrid(
+        // Definimos que queremos 2 columnas de ancho fijo
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        // Espaciado vertical y horizontal entre las tarjetas
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
+        // Padding para que la cuadrícula no se pegue a los bordes
+        contentPadding = PaddingValues(16.dp)
     ) {
         items(horoscopeList) { horoscope ->
+            // El item ahora se adaptará al nuevo diseño vertical
             HoroscopeItem(horoscope = horoscope)
         }
     }
 }
 
+// --- CAMBIO PRINCIPAL 2: REDISEÑAR EL ITEM ---
 @Composable
 fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = modifier, // El modifier ahora viene de la grid, no necesita fillMaxWidth
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Row(
+        // Usamos Column para apilar la imagen y el texto verticalmente
+        Column(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally // Centramos los elementos
         ) {
             Image(
                 painter = painterResource(id = horoscope.img),
                 contentDescription = stringResource(id = horoscope.name),
-                modifier = Modifier.size(64.dp)
+                // Aumentamos el tamaño de la imagen para que se vea mejor
+                modifier = Modifier.size(120.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            // Espacio vertical entre la imagen y el texto
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = horoscope.name),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.titleMedium, // Un estilo de texto adecuado
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center // Centramos el texto
             )
         }
     }
@@ -244,9 +245,9 @@ fun AppBottomNavigationBar(
 
 
 // --- PREVIEWS ACTUALIZADOS ---
-// No es necesario cambiar el código de las previews. Con la corrección en `HoroscopeContent`,
-// ahora funcionarán correctamente y mostrarán la lista real sin problemas.
 
+// Estas previews ahora mostrarán la nueva cuadrícula, ya que `MainScreen`
+// renderiza `HoroscopeContent` por defecto.
 @Preview(showBackground = true, name = "Main Screen Dark")
 @Composable
 fun MainScreenDarkPreview() {
@@ -263,10 +264,20 @@ fun MainScreenLightPreview() {
     }
 }
 
-@Preview(showBackground = true)
+// Esta preview ahora muestra el nuevo diseño vertical del item.
+@Preview(name = "Horoscope Item Vertical")
 @Composable
 fun HoroscopeItemPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
         HoroscopeItem(horoscope = HoroscopeInfo.Aries)
+    }
+}
+
+// NUEVA PREVIEW: Es útil tener una preview solo de la cuadrícula.
+@Preview(showBackground = true, name = "Horoscope Grid Preview")
+@Composable
+fun HoroscopeContentPreview() {
+    ComposehoroscopoTheme(darkTheme = true) {
+        HoroscopeContent()
     }
 }
