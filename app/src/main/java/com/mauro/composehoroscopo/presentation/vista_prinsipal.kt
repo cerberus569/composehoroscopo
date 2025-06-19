@@ -1,20 +1,20 @@
 package com.mauro.composehoroscopo.presentation
 
-import androidx.compose.foundation.Image // CAMBIO: Import necesario
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row // CAMBIO: Import necesario
-import androidx.compose.foundation.layout.Spacer // CAMBIO: Import necesario
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width // CAMBIO: Import necesario
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card // CAMBIO: Import necesario para un mejor diseño
-import androidx.compose.material3.CardDefaults // CAMBIO: Import necesario
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,7 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mauro.composehoroscopo.AppDestinations
 import com.mauro.composehoroscopo.BottomNavigationItem
 import com.mauro.composehoroscopo.R
-import com.mauro.composehoroscopo.domain.model.HoroscopeInfo // CAMBIO: Importamos nuestro modelo
+import com.mauro.composehoroscopo.domain.model.HoroscopeInfo
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,7 +109,6 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
         modifier = Modifier.padding(paddingValues)
     ) {
         composable(AppDestinations.HOME_ROUTE) {
-            // CAMBIO: Ahora HoroscopeContent mostrará los datos reales
             HoroscopeContent()
         }
         composable(AppDestinations.FAVORITES_ROUTE) {
@@ -121,33 +120,39 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
     }
 }
 
-// --- CAMBIO PRINCIPAL: ACTUALIZACIÓN DE HoroscopeContent ---
 @Composable
 fun HoroscopeContent() {
-    // Obtenemos todos los objetos de nuestro sealed class de forma programática.
-    // Esto es muy útil porque si en el futuro añades un nuevo signo, se agregará a la lista automáticamente.
-    val horoscopeList = HoroscopeInfo::class.sealedSubclasses.mapNotNull { it.objectInstance }
+    // --- CORRECCIÓN CLAVE ---
+    // Reemplazamos el método de reflexión que causa el crash por una lista explícita.
+    // Esta es la forma segura y recomendada de hacerlo.
+    val horoscopeList = listOf(
+        HoroscopeInfo.Aries,
+        HoroscopeInfo.Taurus,
+        HoroscopeInfo.Gemini,
+        HoroscopeInfo.Cancer,
+        HoroscopeInfo.Leo,
+        HoroscopeInfo.Virgo,
+        HoroscopeInfo.Libra,
+        HoroscopeInfo.Scorpio,
+        HoroscopeInfo.Sagittarius,
+        HoroscopeInfo.Capricorn,
+        HoroscopeInfo.Aquarius,
+        HoroscopeInfo.Pisces
+    )
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        // Aumentamos el espaciado para que las tarjetas se vean mejor
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        // Añadimos padding vertical para que no se pegue a la barra superior e inferior
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
-        // Usamos la lista real de horóscopos
         items(horoscopeList) { horoscope ->
-            // Llamamos a un nuevo Composable para dibujar cada elemento
             HoroscopeItem(horoscope = horoscope)
         }
     }
 }
 
-// --- NUEVO COMPOSABLE: HoroscopeItem ---
-// Es una buena práctica crear un Composable específico para los elementos de una lista.
-// Esto hace el código más limpio y reutilizable.
 @Composable
 fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
     Card(
@@ -161,10 +166,10 @@ fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
         ) {
             Image(
                 painter = painterResource(id = horoscope.img),
-                contentDescription = stringResource(id = horoscope.name), // Descripción para accesibilidad
+                contentDescription = stringResource(id = horoscope.name),
                 modifier = Modifier.size(64.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp)) // Espacio entre imagen y texto
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = stringResource(id = horoscope.name),
                 style = MaterialTheme.typography.headlineSmall,
@@ -175,7 +180,6 @@ fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
 }
 
 
-// --- PANTALLAS DE EJEMPLO (Sin cambios) ---
 @Composable
 fun LuckScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -191,7 +195,6 @@ fun PalmistryScreen() {
 }
 
 
-// --- BARRA DE NAVEGACIÓN (Sin cambios) ---
 @Composable
 fun AppBottomNavigationBar(
     items: List<BottomNavigationItem>,
@@ -241,10 +244,9 @@ fun AppBottomNavigationBar(
 
 
 // --- PREVIEWS ACTUALIZADOS ---
+// No es necesario cambiar el código de las previews. Con la corrección en `HoroscopeContent`,
+// ahora funcionarán correctamente y mostrarán la lista real sin problemas.
 
-// Las Previews de MainScreen ya funcionan correctamente, porque `MainScreen`
-// renderiza el `NavHost`, que por defecto muestra `HoroscopeContent`.
-// Así que ahora verás la lista real en las previews.
 @Preview(showBackground = true, name = "Main Screen Dark")
 @Composable
 fun MainScreenDarkPreview() {
@@ -261,13 +263,10 @@ fun MainScreenLightPreview() {
     }
 }
 
-// CAMBIO: AÑADIMOS UNA PREVIEW ESPECÍFICA PARA NUESTRO NUEVO HoroscopeItem
-// Esto es muy útil para diseñar y probar el item de forma aislada.
 @Preview(showBackground = true)
 @Composable
 fun HoroscopeItemPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        // Usamos un horóscopo de ejemplo para la preview
         HoroscopeItem(horoscope = HoroscopeInfo.Aries)
     }
 }
