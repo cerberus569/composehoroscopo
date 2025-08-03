@@ -3,17 +3,17 @@ package com.mauro.composehoroscopo.presentation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column // CAMBIO: Import necesario
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer // CAMBIO: Import necesario
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height // CAMBIO: Import necesario
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells // CAMBIO: Import necesario
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid // CAMBIO: Import necesario
-import androidx.compose.foundation.lazy.grid.items // CAMBIO: Import necesario
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -50,8 +50,11 @@ import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
+// CORRECCIÓN 1: MainScreen ahora RECIBE un NavController en lugar de crearlo.
+// Esto permite que la preview funcione, ya que podemos pasarle un controlador "falso".
+fun MainScreen(navController: NavHostController) {
+    // CORRECCIÓN 2: Se elimina la creación del NavController de aquí.
+    // val navController = rememberNavController()
 
     val navigationItems = listOf(
         BottomNavigationItem(
@@ -92,11 +95,12 @@ fun MainScreen() {
             bottomBar = {
                 AppBottomNavigationBar(
                     items = navigationItems,
-                    navController = navController,
+                    navController = navController, // Se usa el NavController recibido
                     iconSize = 22.dp
                 )
             }
         ) { innerPadding ->
+            // Se pasa el NavController recibido al Host de navegación
             AppNavigationHost(navController = navController, paddingValues = innerPadding)
         }
     }
@@ -121,7 +125,7 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
     }
 }
 
-// --- CAMBIO PRINCIPAL 1: USAR LazyVerticalGrid ---
+
 @Composable
 fun HoroscopeContent() {
     val horoscopeList = listOf(
@@ -131,50 +135,41 @@ fun HoroscopeContent() {
         HoroscopeInfo.Capricorn, HoroscopeInfo.Aquarius, HoroscopeInfo.Pisces
     )
 
-    // Usamos LazyVerticalGrid en lugar de LazyColumn
     LazyVerticalGrid(
-        // Definimos que queremos 2 columnas de ancho fijo
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
-        // Espaciado vertical y horizontal entre las tarjetas
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        // Padding para que la cuadrícula no se pegue a los bordes
         contentPadding = PaddingValues(16.dp)
     ) {
         items(horoscopeList) { horoscope ->
-            // El item ahora se adaptará al nuevo diseño vertical
             HoroscopeItem(horoscope = horoscope)
         }
     }
 }
 
-// --- CAMBIO PRINCIPAL 2: REDISEÑAR EL ITEM ---
 @Composable
 fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier, // El modifier ahora viene de la grid, no necesita fillMaxWidth
+        modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        // Usamos Column para apilar la imagen y el texto verticalmente
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally // Centramos los elementos
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(id = horoscope.img),
                 contentDescription = stringResource(id = horoscope.name),
-                // Aumentamos el tamaño de la imagen para que se vea mejor
                 modifier = Modifier.size(120.dp)
             )
-            // Espacio vertical entre la imagen y el texto
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = horoscope.name),
-                style = MaterialTheme.typography.titleMedium, // Un estilo de texto adecuado
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center // Centramos el texto
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -246,13 +241,15 @@ fun AppBottomNavigationBar(
 
 // --- PREVIEWS ACTUALIZADOS ---
 
-// Estas previews ahora mostrarán la nueva cuadrícula, ya que `MainScreen`
-// renderiza `HoroscopeContent` por defecto.
+
 @Preview(showBackground = true, name = "Main Screen Dark")
 @Composable
 fun MainScreenDarkPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        MainScreen()
+        // CORRECCIÓN 3: Creamos un NavController de prueba aquí, solo para la preview.
+        val previewNavController = rememberNavController()
+        // CORRECCIÓN 4: Pasamos el controlador de prueba a nuestra MainScreen.
+        MainScreen(navController = previewNavController)
     }
 }
 
@@ -260,11 +257,13 @@ fun MainScreenDarkPreview() {
 @Composable
 fun MainScreenLightPreview() {
     ComposehoroscopoTheme(darkTheme = false) {
-        MainScreen()
+        // Hacemos lo mismo para la preview con tema claro.
+        val previewNavController = rememberNavController()
+        MainScreen(navController = previewNavController)
     }
 }
 
-// Esta preview ahora muestra el nuevo diseño vertical del item.
+// Esta preview no necesita cambios porque no depende del NavController.
 @Preview(name = "Horoscope Item Vertical")
 @Composable
 fun HoroscopeItemPreview() {
@@ -273,7 +272,7 @@ fun HoroscopeItemPreview() {
     }
 }
 
-// NUEVA PREVIEW: Es útil tener una preview solo de la cuadrícula.
+// Esta preview no necesita cambios porque no depende del NavController.
 @Preview(showBackground = true, name = "Horoscope Grid Preview")
 @Composable
 fun HoroscopeContentPreview() {
