@@ -50,10 +50,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument // Import para navArgument
+import androidx.navigation.NavType // Import para NavType
+
 import com.mauro.composehoroscopo.AppDestinations
 import com.mauro.composehoroscopo.BottomNavigationItem
 import com.mauro.composehoroscopo.R
 import com.mauro.composehoroscopo.domain.model.HoroscopeInfo
+import com.mauro.composehoroscopo.domain.model.HoroscopeModel // ¡NUEVO! Importa HoroscopeModel
+import com.mauro.composehoroscopo.presentation.detail.HoroscopeDetailScreen // ¡NUEVO! Importa HoroscopeDetailScreen
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 import kotlinx.coroutines.launch // CORRECCIÓN: Import
 
@@ -117,10 +122,9 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
         modifier = Modifier.padding(paddingValues)
     ) {
         composable(AppDestinations.HOME_ROUTE) {
-            // CORRECCIÓN: Pasamos una lambda para manejar el clic.
-            // En un futuro, aquí llamarías a navController.navigate(...)
-            HoroscopeContent(onHoroscopeClick = {
-                // Lógica de navegación cuando se hace clic en un horóscopo
+            // CORRECCIÓN: La lambda ahora llama a navController.navigate
+            HoroscopeContent(onHoroscopeClick = { horoscopeInfo ->
+                navController.navigate("${AppDestinations.HOROSCOPE_DETAIL_ROUTE}/${horoscopeInfo.horoscopeModel.name}")
             })
         }
         composable(AppDestinations.FAVORITES_ROUTE) {
@@ -129,6 +133,37 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
         composable(AppDestinations.SETTINGS_ROUTE) {
             PalmistryScreen()
         }
+
+        // --- ¡NUEVO DESTINO PARA HOROSCOPE_DETAIL_SCREEN! ---
+        composable(
+            route = "${AppDestinations.HOROSCOPE_DETAIL_ROUTE}/{${AppDestinations.HOROSCOPE_DETAIL_ARG}}",
+            arguments = listOf(
+                navArgument(AppDestinations.HOROSCOPE_DETAIL_ARG) {
+                    type = NavType.EnumType(HoroscopeModel::class.java)
+                }
+            )
+        ) { backStackEntry ->
+            val horoscopeType = backStackEntry.arguments
+                ?.getString(AppDestinations.HOROSCOPE_DETAIL_ARG)
+                ?.let { HoroscopeModel.valueOf(it) } // Convertimos el String de nuevo a HoroscopeModel
+
+            horoscopeType?.let {
+                HoroscopeDetailScreen(
+                    navController = navController,
+                    horoscopeType = it // Pasamos el tipo de horóscopo
+                )
+            } ?: run {
+                // Manejo de error si el argumento no se pudo extraer o es inválido
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Error: Horóscopo no especificado o inválido",
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+        // --- FIN DEL NUEVO DESTINO ---
     }
 }
 
@@ -162,30 +197,21 @@ fun HoroscopeItem(
     modifier: Modifier = Modifier,
     onItemClick: (HoroscopeInfo) -> Unit // CORRECCIÓN: Recibe una función a ejecutar al final de la animación
 ) {
-    // PASO 1: Creamos un valor animable para la rotación y un scope para lanzar la animación.
     val rotation = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
 
     Card(
-        // PASO 2: Hacemos la tarjeta clicable para disparar la animación.
         modifier = modifier.clickable {
-            // Usamos una corutina para poder ejecutar la animación
             scope.launch {
-                // PASO 3: Se inicia la animación de rotación.
-                // Esta función es de suspensión, el código esperará aquí hasta que termine.
                 rotation.animateTo(
                     targetValue = 360f,
                     animationSpec = tween(
                         durationMillis = 500,
-                        easing = LinearEasing // Interpolador lineal, como en el código original
+                        easing = LinearEasing
                     )
                 )
-
-                // PASO 4: Una vez terminada la animación, se ejecuta la acción (lambda).
-                onItemClick(horoscope)
-
-                // PASO 5: Reseteamos la rotación a 0 sin animar, para que esté lista para el próximo clic.
-                rotation.snapTo(0f)
+                onItemClick(horoscope) // Ejecutamos la acción de clic después de la animación
+                rotation.snapTo(0f) // Reseteamos la rotación
             }
         },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -198,7 +224,6 @@ fun HoroscopeItem(
             Image(
                 painter = painterResource(id = horoscope.img),
                 contentDescription = stringResource(id = horoscope.name),
-                // PASO 6: Aplicamos el valor de la rotación animada a la imagen.
                 modifier = Modifier
                     .size(120.dp)
                     .rotate(rotation.value)
@@ -249,7 +274,8 @@ fun AppBottomNavigationBar(
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            // popUpTo debería usar la ruta de inicio, no el ID
+                            popUpTo(AppDestinations.HOME_ROUTE) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -304,7 +330,6 @@ fun MainScreenLightPreview() {
 @Composable
 fun HoroscopeItemPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        // CORRECCIÓN: La preview necesita recibir la lambda, aunque esté vacía.
         HoroscopeItem(horoscope = HoroscopeInfo.Aries, onItemClick = {})
     }
 }
@@ -314,7 +339,6 @@ fun HoroscopeItemPreview() {
 @Composable
 fun HoroscopeContentPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        // CORRECCIÓN: La preview necesita recibir la lambda, aunque esté vacía.
         HoroscopeContent(onHoroscopeClick = {})
     }
 }
