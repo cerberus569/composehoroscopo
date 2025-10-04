@@ -105,9 +105,10 @@ fun ErrorState(errorMessage: String) {
     }
 }
 
+// Modifica la definición de SuccessState en tu archivo detail/HoroscopeDetailScreen.kt
 @Composable
 fun SuccessState(state: HoroscopeDetailState.Success) {
-    val image = when (state.horoscopeModel) {
+    val image = when (state.horoscopeModel) { // Ahora usas state.horoscopeModel
         Aries -> R.drawable.detail_aries
         Taurus -> R.drawable.detail_taurus
         Gemini -> R.drawable.detail_gemini
@@ -128,17 +129,9 @@ fun SuccessState(state: HoroscopeDetailState.Success) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = "Imagen del horóscopo",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(24.dp))
+        // ... (resto del código igual)
         Text(
-            text = state.sign,
+            text = state.sign, // Usas el nombre del signo que pasas en el estado
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
