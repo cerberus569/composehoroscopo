@@ -139,13 +139,19 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
             route = "${AppDestinations.HOROSCOPE_DETAIL_ROUTE}/{${AppDestinations.HOROSCOPE_DETAIL_ARG}}",
             arguments = listOf(
                 navArgument(AppDestinations.HOROSCOPE_DETAIL_ARG) {
-                    type = NavType.EnumType(HoroscopeModel::class.java)
+                    type = NavType.StringType
                 }
             )
         ) { backStackEntry ->
             val horoscopeType = backStackEntry.arguments
                 ?.getString(AppDestinations.HOROSCOPE_DETAIL_ARG)
-                ?.let { HoroscopeModel.valueOf(it) } // Convertimos el String de nuevo a HoroscopeModel
+                ?.let {
+                    try {
+                        HoroscopeModel.valueOf(it)
+                    } catch (e: IllegalArgumentException) {
+                        null // Por si acaso el string no es válido
+                    }
+                } // Convertimos el String de nuevo a HoroscopeModel
 
             horoscopeType?.let {
                 HoroscopeDetailScreen(

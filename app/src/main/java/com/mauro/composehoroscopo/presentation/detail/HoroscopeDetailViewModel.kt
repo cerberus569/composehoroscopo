@@ -1,5 +1,6 @@
 package com.mauro.composehoroscopo.presentation.detail
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mauro.composehoroscopo.domain.model.HoroscopeModel
@@ -20,19 +21,38 @@ class HoroscopeDetailViewModel @Inject constructor(private val getPredictionUseC
     val state: StateFlow<HoroscopeDetailState> = _state
 
     fun getHoroscope(horoscopeType: HoroscopeModel) {
+        println("=====> ViewModel: INICIO - horoscopeType = $horoscopeType")
+        Log.d("HoroscopeDetail", "=====> ViewModel: INICIO - horoscopeType = $horoscopeType")
+
         viewModelScope.launch {
             _state.value = HoroscopeDetailState.Loading
-            val result = withContext(Dispatchers.IO) { getPredictionUseCase(horoscopeType.name) } // Pasa el nombre para la API
+            val signName = horoscopeType.name.lowercase()
+
+            println("=====> ViewModel: Sign lowercase = $signName")
+            Log.d("HoroscopeDetail", "=====> ViewModel: Sign lowercase = $signName")
+
+            val result = withContext(Dispatchers.IO) {
+                getPredictionUseCase(signName)
+            }
+
+            println("=====> ViewModel: Result = $result")
+            Log.d("HoroscopeDetail", "=====> ViewModel: Result = $result")
+
             if(result != null){
-                // ¡CORRECCIÓN APLICADA AQUÍ!
-                // Usamos 'result.horoscope' para la predicción, ya que así se llama en tu PredictionModel.
-                // Usamos 'result.sign' para el nombre del signo, que coincide con tu PredictionModel.
+                println("=====> ViewModel: SUCCESS - horoscope = ${result.horoscope}")
+                println("=====> ViewModel: SUCCESS - sign = ${result.sign}")
+                Log.d("HoroscopeDetail", "=====> ViewModel: SUCCESS - horoscope = ${result.horoscope}")
+                Log.d("HoroscopeDetail", "=====> ViewModel: SUCCESS - sign = ${result.sign}")
+
                 _state.value = HoroscopeDetailState.Success(
-                    prediction = result.horoscope, // <-- CAMBIO AQUÍ: antes era result.prediction
+                    prediction = result.horoscope,
                     sign = result.sign,
                     horoscopeModel = horoscopeType
                 )
             } else {
+                println("=====> ViewModel: ERROR - result is null")
+                Log.e("HoroscopeDetail", "=====> ViewModel: ERROR - result is null")
+
                 _state.value = HoroscopeDetailState.Error("Ha ocurrido un error, inténtelo más tarde")
             }
         }

@@ -2,33 +2,33 @@ package com.mauro.composehoroscopo.data
 
 import android.util.Log
 import com.mauro.composehoroscopo.data.network.HoroscopeApiService
-import com.mauro.composehoroscopo.data.network.response.PredictionResponse // Importa la clase PredictionResponse
+import com.mauro.composehoroscopo.data.network.response.PredictionResponse
 import com.mauro.composehoroscopo.domain.Repository
-import com.mauro.composehoroscopo.domain.model.PredictionModel // Importa PredictionModel para el tipo de retorno
-
-// ¡NO NECESITAS ESTE IMPORT SI LA FUNCIÓN TO DOMAIN ESTÁ DENTRO DE PredictionResponse!
-// Si la función toDomain estuviera en un archivo separado, sí lo necesitarías.
-// import com.mauro.composehoroscopo.data.network.response.toDomain
-
+import com.mauro.composehoroscopo.domain.model.PredictionModel
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val apiService: HoroscopeApiService) : Repository {
 
     override suspend fun getPrediction(sign: String): PredictionModel? {
-        Log.d("HoroscopeApp", "RepositoryImpl: Calling API for sign: $sign") // Log para depuración
+        println("=====> Repository: INICIO - sign recibido = $sign")
+        Log.d("HoroscopeDetail", "=====> Repository: INICIO - sign recibido = $sign")
 
         return runCatching {
-            // Se llama a la API con el signo recibido
+            println("=====> Repository: Llamando a API...")
+            Log.d("HoroscopeDetail", "=====> Repository: Llamando a API...")
+
             val response = apiService.getHoroscope(sign)
-            // Se mapea la respuesta de la API a tu modelo de dominio
-            // Aquí se está usando la función 'toDomain()' que está DEFINIDA DENTRO
-            // de la clase PredictionResponse.
+
+            println("=====> Repository: Respuesta recibida = $response")
+            Log.d("HoroscopeDetail", "=====> Repository: Respuesta recibida = $response")
+
             response.toDomain()
         }
             .onFailure {
-                Log.e("HoroscopeApp", "RepositoryImpl: Error calling API for sign $sign: ${it.message}", it)
+                println("=====> Repository: ERROR = ${it.message}")
+                Log.e("HoroscopeDetail", "=====> Repository: ERROR = ${it.message}", it)
             }
-            .getOrNull() // Devuelve el resultado si es Success, o null si es Failure
+            .getOrNull()
     }
 }
 
