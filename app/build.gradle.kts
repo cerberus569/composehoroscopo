@@ -21,7 +21,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField ("String", "BASE_URL", "\"https://your-api-base-url.com/\"")
+        buildConfigField("String", "BASE_URL", "\"https://newastro.vercel.app/\"")
     }
 
     buildTypes {

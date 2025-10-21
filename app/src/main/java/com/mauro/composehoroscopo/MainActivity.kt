@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
 import com.mauro.composehoroscopo.presentation.MainScreen
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
