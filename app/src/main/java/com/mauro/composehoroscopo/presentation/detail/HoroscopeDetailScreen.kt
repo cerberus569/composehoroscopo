@@ -129,6 +129,16 @@ fun SuccessState(state: HoroscopeDetailState.Success) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = state.sign,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(24.dp))
         // ... (resto del código igual)
         Text(
             text = state.sign, // Usas el nombre del signo que pasas en el estado

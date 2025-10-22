@@ -1,5 +1,6 @@
 package com.mauro.composehoroscopo.data.network
 
+import android.util.Log
 import com.mauro.composehoroscopo.BuildConfig.BASE_URL
 import com.mauro.composehoroscopo.data.RepositoryImpl
 import com.mauro.composehoroscopo.data.core.interceptors.AuthInterceptor
@@ -21,6 +22,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        Log.d("NetworkModule", "=====> BASE_URL = ${BASE_URL}")
         return Retrofit
             .Builder()
             .baseUrl(BASE_URL)
