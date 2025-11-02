@@ -1,6 +1,6 @@
 package com.mauro.composehoroscopo.domain.providers
 
-import com.mauro.composehoroscopo.domain.model.RandomCardProvider
+import com.mauro.composehoroscopo.presentation.providers.RandomCardProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

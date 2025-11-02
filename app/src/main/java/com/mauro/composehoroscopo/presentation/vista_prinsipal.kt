@@ -57,6 +57,7 @@ import com.mauro.composehoroscopo.R
 import com.mauro.composehoroscopo.domain.model.HoroscopeInfo
 import com.mauro.composehoroscopo.domain.model.HoroscopeModel
 import com.mauro.composehoroscopo.presentation.detail.HoroscopeDetailScreen
+import com.mauro.composehoroscopo.presentation.luck.HoroscopeLuckScreen
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 import kotlinx.coroutines.launch
 

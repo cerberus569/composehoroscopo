@@ -30,6 +30,7 @@ import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 import kotlinx.coroutines.launch
 import android.content.Intent
 
+
 @Composable
 fun HoroscopeLuckScreen(
     luckViewModel: LuckViewModel = hiltViewModel()
@@ -131,14 +132,14 @@ fun HoroscopeLuckScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.bg_roulette),
+                    painter = painterResource(id = R.drawable.card_back_small),
                     contentDescription = "Roulette Background",
                     modifier = Modifier.size(300.dp),
                     contentScale = ContentScale.Fit
                 )
 
                 Image(
-                    painter = painterResource(id = R.drawable.roulette),
+                    painter = painterResource(id = R.drawable.ruleta),
                     contentDescription = "Roulette",
                     modifier = Modifier
                         .size(250.dp)
@@ -215,7 +216,7 @@ fun HoroscopeLuckScreen(
             // Carta animada en reverso
             if (showCard) {
                 Image(
-                    painter = painterResource(id = R.drawable.reverse),
+                    painter = painterResource(id = R.drawable.card_reverse),
                     contentDescription = "Card Reverse",
                     modifier = Modifier
                         .size(200.dp)

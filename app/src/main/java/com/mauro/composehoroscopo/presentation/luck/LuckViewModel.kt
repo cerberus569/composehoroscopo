@@ -1,10 +1,9 @@
 package com.mauro.composehoroscopo.presentation.luck
 
-package com.mauro.composehoroscopo.presentation.luck
 
 import androidx.lifecycle.ViewModel
 import com.mauro.composehoroscopo.domain.model.LuckyModel
-import com.mauro.composehoroscopo.domain.providers.RandomCardProvider
+import com.mauro.composehoroscopo.presentation.providers.RandomCardProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,7 +1,7 @@
-package com.aristidevs.horoscapp.ui.providers
+package com.mauro.composehoroscopo.presentation.providers
 
-import com.aristidevs.horoscapp.R
-import com.aristidevs.horoscapp.ui.model.LuckyModel
+import com.mauro.composehoroscopo.R
+import com.mauro.composehoroscopo.domain.model.LuckyModel
 import javax.inject.Inject
 import kotlin.random.Random
 
