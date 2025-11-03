@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -30,7 +29,6 @@ import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 import kotlinx.coroutines.launch
 import android.content.Intent
 
-
 @Composable
 fun HoroscopeLuckScreen(
     luckViewModel: LuckViewModel = hiltViewModel()
@@ -40,36 +38,33 @@ fun HoroscopeLuckScreen(
     val scope = rememberCoroutineScope()
 
     // Estados para las animaciones
-    var rouletteRotation by remember { mutableFloatStateOf(0f) }
     var showCard by remember { mutableStateOf(false) }
     var showPrediction by remember { mutableStateOf(false) }
-    var cardScale by remember { mutableFloatStateOf(0f) }
-    var cardTranslationY by remember { mutableFloatStateOf(1000f) }
     var previewAlpha by remember { mutableFloatStateOf(1f) }
     var predictionAlpha by remember { mutableFloatStateOf(0f) }
 
-    // Animatable para la rotación de la ruleta
+    // Animatable para las animaciones
     val rotationAnimatable = remember { Animatable(0f) }
     val scaleAnimatable = remember { Animatable(0f) }
     val slideAnimatable = remember { Animatable(1000f) }
 
     fun spinRoulette() {
         scope.launch {
+            // Reset estados
             showCard = false
             showPrediction = false
             previewAlpha = 1f
             predictionAlpha = 0f
 
             // Rotación de la ruleta
-            val targetRotation = rouletteRotation + (360 * 4) + (0..360).random()
+            val degrees = (360 * 4) + (0..360).random()
             rotationAnimatable.animateTo(
-                targetValue = targetRotation,
+                targetValue = rotationAnimatable.value + degrees,
                 animationSpec = tween(
                     durationMillis = 2000,
                     easing = FastOutSlowInEasing
                 )
             )
-            rouletteRotation = targetRotation
 
             // Obtener nueva predicción
             luckViewModel.getRandomLuck()
@@ -81,7 +76,6 @@ fun HoroscopeLuckScreen(
                 targetValue = 0f,
                 animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing)
             )
-            cardTranslationY = slideAnimatable.value
 
             // Animación de crecimiento de la carta
             scaleAnimatable.snapTo(0f)
@@ -89,16 +83,13 @@ fun HoroscopeLuckScreen(
                 targetValue = 1f,
                 animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
             )
-            cardScale = scaleAnimatable.value
 
             // Esperar un momento y ocultar la carta
             kotlinx.coroutines.delay(500)
             showCard = false
 
             // Transición de preview a prediction
-            launch {
-                previewAlpha = 0f
-            }
+            previewAlpha = 0f
             kotlinx.coroutines.delay(200)
             showPrediction = true
             predictionAlpha = 1f
@@ -111,9 +102,7 @@ fun HoroscopeLuckScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Título
@@ -121,47 +110,55 @@ fun HoroscopeLuckScreen(
                 text = stringResource(id = R.string.luck),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
             )
 
-            // Vista previa (ruleta)
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .alpha(previewAlpha),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.card_back_small),
-                    contentDescription = "Roulette Background",
-                    modifier = Modifier.size(300.dp),
-                    contentScale = ContentScale.Fit
+            // Vista previa (ruleta) - Solo visible cuando NO hay predicción
+            if (!showPrediction) {
+                // Texto de instrucción arriba
+                Text(
+                    text = "Desliza la ruleta horizontalmente",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
                 )
 
-                Image(
-                    painter = painterResource(id = R.drawable.ruleta),
-                    contentDescription = "Roulette",
+                // Ruleta en la parte inferior
+                Box(
                     modifier = Modifier
-                        .size(250.dp)
-                        .rotate(rotationAnimatable.value)
-                        .pointerInput(Unit) {
-                            detectHorizontalDragGestures { change, dragAmount ->
-                                change.consume()
-                                if (Math.abs(dragAmount) > 50) {
-                                    spinRoulette()
+                        .fillMaxSize()
+                        .alpha(previewAlpha),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    // Ruleta giratoria
+                    Image(
+                        painter = painterResource(id = R.drawable.ruleta),
+                        contentDescription = "Roulette",
+                        modifier = Modifier
+                            .size(280.dp)
+                            .offset(y = 50.dp)
+                            .rotate(rotationAnimatable.value)
+                            .pointerInput(Unit) {
+                                detectHorizontalDragGestures { change, dragAmount ->
+                                    change.consume()
+                                    if (kotlin.math.abs(dragAmount) > 50) {
+                                        spinRoulette()
+                                    }
                                 }
-                            }
-                        },
-                    contentScale = ContentScale.Fit
-                )
+                            },
+                        contentScale = ContentScale.Fit
+                    )
+                }
             }
 
             // Vista de predicción
             if (showPrediction) {
                 Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .alpha(predictionAlpha),
+                        .fillMaxSize()
+                        .alpha(predictionAlpha)
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -170,7 +167,7 @@ fun HoroscopeLuckScreen(
                             painter = painterResource(id = luck.image),
                             contentDescription = "Lucky Card",
                             modifier = Modifier
-                                .size(200.dp)
+                                .size(250.dp)
                                 .padding(bottom = 24.dp),
                             contentScale = ContentScale.Fit
                         )
@@ -209,17 +206,38 @@ fun HoroscopeLuckScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(text = "Compartir")
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Botón para volver a girar
+                        OutlinedButton(
+                            onClick = {
+                                showPrediction = false
+                                previewAlpha = 1f
+                                predictionAlpha = 0f
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.secondary
+                            )
+                        ) {
+                            Text(text = "Consultar nuevamente")
+                        }
                     }
                 }
             }
+        }
 
-            // Carta animada en reverso
-            if (showCard) {
+        // Carta animada (solo durante la animación)
+        if (showCard) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 Image(
-                    painter = painterResource(id = R.drawable.card_reverse),
-                    contentDescription = "Card Reverse",
+                    painter = painterResource(id = R.drawable.card_back_small),
+                    contentDescription = "Card Back",
                     modifier = Modifier
-                        .size(200.dp)
+                        .size(250.dp)
                         .graphicsLayer {
                             translationY = slideAnimatable.value
                             scaleX = scaleAnimatable.value
@@ -228,19 +246,6 @@ fun HoroscopeLuckScreen(
                     contentScale = ContentScale.Fit
                 )
             }
-        }
-
-        // Texto de instrucción
-        if (!showPrediction) {
-            Text(
-                text = "Desliza la ruleta para descubrir tu suerte",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 32.dp)
-            )
         }
     }
 }
