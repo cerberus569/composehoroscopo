@@ -64,6 +64,9 @@ dependencies {
     // Navigation for Jetpack Compose
     implementation(libs.androidx.navigation.compose)
 
+// Accompanist Permissions for handling runtime permissions in Compose
+    implementation(libs.accompanist.permissions)
+
 // Hilt integration with Navigation in Compose
     implementation(libs.androidx.hilt.navigation.compose)
     //Retrofit si

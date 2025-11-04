@@ -58,6 +58,7 @@ import com.mauro.composehoroscopo.domain.model.HoroscopeInfo
 import com.mauro.composehoroscopo.domain.model.HoroscopeModel
 import com.mauro.composehoroscopo.presentation.detail.HoroscopeDetailScreen
 import com.mauro.composehoroscopo.presentation.luck.HoroscopeLuckScreen
+import com.mauro.composehoroscopo.presentation.palmistry.PalmistryScreen
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
 import kotlinx.coroutines.launch
 
@@ -242,9 +243,7 @@ fun HoroscopeItem(
 
 @Composable
 fun PalmistryScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Pantalla de Quiromancia", style = MaterialTheme.typography.headlineMedium)
-    }
+    com.mauro.composehoroscopo.presentation.palmistry.PalmistryScreen()
 }
 
 @Composable
