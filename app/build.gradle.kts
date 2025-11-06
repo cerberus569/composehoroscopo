@@ -21,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "BASE_URL", "\"https://newastro.vercel.app/\"")
+
     }
 
     buildTypes {
@@ -41,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
@@ -60,6 +63,9 @@ dependencies {
 
     // Navigation for Jetpack Compose
     implementation(libs.androidx.navigation.compose)
+
+// Accompanist Permissions for handling runtime permissions in Compose
+    implementation(libs.accompanist.permissions)
 
 // Hilt integration with Navigation in Compose
     implementation(libs.androidx.hilt.navigation.compose)

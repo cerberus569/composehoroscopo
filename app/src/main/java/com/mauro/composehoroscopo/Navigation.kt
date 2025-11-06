@@ -11,6 +11,8 @@ object AppDestinations {
     const val HOME_ROUTE = "home"
     const val FAVORITES_ROUTE = "favorites"
     const val SETTINGS_ROUTE = "settings"
+    const val HOROSCOPE_DETAIL_ROUTE = "horoscope_detail_route" // La base de la ruta
+    const val HOROSCOPE_DETAIL_ARG = "horoscopeType" // El nombre del argumento
 }
 
 /**

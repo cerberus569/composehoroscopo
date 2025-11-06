@@ -1,6 +1,10 @@
 package com.mauro.composehoroscopo.presentation
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +32,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,24 +45,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mauro.composehoroscopo.AppDestinations
 import com.mauro.composehoroscopo.BottomNavigationItem
 import com.mauro.composehoroscopo.R
 import com.mauro.composehoroscopo.domain.model.HoroscopeInfo
+import com.mauro.composehoroscopo.domain.model.HoroscopeModel
+import com.mauro.composehoroscopo.presentation.detail.HoroscopeDetailScreen
+import com.mauro.composehoroscopo.presentation.luck.HoroscopeLuckScreen
+import com.mauro.composehoroscopo.presentation.palmistry.PalmistryScreen
 import com.mauro.composehoroscopo.ui.theme.ComposehoroscopoTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-// CORRECCIÓN 1: MainScreen ahora RECIBE un NavController en lugar de crearlo.
-// Esto permite que la preview funcione, ya que podemos pasarle un controlador "falso".
 fun MainScreen(navController: NavHostController) {
-    // CORRECCIÓN 2: Se elimina la creación del NavController de aquí.
-    // val navController = rememberNavController()
-
     val navigationItems = listOf(
         BottomNavigationItem(
             label = stringResource(id = R.string.horoscope),
@@ -95,12 +104,11 @@ fun MainScreen(navController: NavHostController) {
             bottomBar = {
                 AppBottomNavigationBar(
                     items = navigationItems,
-                    navController = navController, // Se usa el NavController recibido
+                    navController = navController,
                     iconSize = 22.dp
                 )
             }
         ) { innerPadding ->
-            // Se pasa el NavController recibido al Host de navegación
             AppNavigationHost(navController = navController, paddingValues = innerPadding)
         }
     }
@@ -114,20 +122,57 @@ fun AppNavigationHost(navController: NavHostController, paddingValues: PaddingVa
         modifier = Modifier.padding(paddingValues)
     ) {
         composable(AppDestinations.HOME_ROUTE) {
-            HoroscopeContent()
+            HoroscopeContent(onHoroscopeClick = { horoscopeInfo ->
+                navController.navigate("${AppDestinations.HOROSCOPE_DETAIL_ROUTE}/${horoscopeInfo.horoscopeModel.name}")
+            })
         }
+
         composable(AppDestinations.FAVORITES_ROUTE) {
-            LuckScreen()
+            HoroscopeLuckScreen()
         }
+
         composable(AppDestinations.SETTINGS_ROUTE) {
             PalmistryScreen()
+        }
+
+        composable(
+            route = "${AppDestinations.HOROSCOPE_DETAIL_ROUTE}/{${AppDestinations.HOROSCOPE_DETAIL_ARG}}",
+            arguments = listOf(
+                navArgument(AppDestinations.HOROSCOPE_DETAIL_ARG) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val horoscopeType = backStackEntry.arguments
+                ?.getString(AppDestinations.HOROSCOPE_DETAIL_ARG)
+                ?.let {
+                    try {
+                        HoroscopeModel.valueOf(it)
+                    } catch (e: IllegalArgumentException) {
+                        null
+                    }
+                }
+
+            horoscopeType?.let {
+                HoroscopeDetailScreen(
+                    navController = navController,
+                    horoscopeType = it
+                )
+            } ?: run {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Error: Horóscopo no especificado o inválido",
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
 
-
 @Composable
-fun HoroscopeContent() {
+fun HoroscopeContent(onHoroscopeClick: (HoroscopeInfo) -> Unit) {
     val horoscopeList = listOf(
         HoroscopeInfo.Aries, HoroscopeInfo.Taurus, HoroscopeInfo.Gemini,
         HoroscopeInfo.Cancer, HoroscopeInfo.Leo, HoroscopeInfo.Virgo,
@@ -143,15 +188,34 @@ fun HoroscopeContent() {
         contentPadding = PaddingValues(16.dp)
     ) {
         items(horoscopeList) { horoscope ->
-            HoroscopeItem(horoscope = horoscope)
+            HoroscopeItem(horoscope = horoscope, onItemClick = { onHoroscopeClick(horoscope) })
         }
     }
 }
 
 @Composable
-fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
+fun HoroscopeItem(
+    horoscope: HoroscopeInfo,
+    modifier: Modifier = Modifier,
+    onItemClick: (HoroscopeInfo) -> Unit
+) {
+    val rotation = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+
     Card(
-        modifier = modifier,
+        modifier = modifier.clickable {
+            scope.launch {
+                rotation.animateTo(
+                    targetValue = 360f,
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
+                    )
+                )
+                onItemClick(horoscope)
+                rotation.snapTo(0f)
+            }
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -162,7 +226,9 @@ fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
             Image(
                 painter = painterResource(id = horoscope.img),
                 contentDescription = stringResource(id = horoscope.name),
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier
+                    .size(120.dp)
+                    .rotate(rotation.value)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -175,21 +241,10 @@ fun HoroscopeItem(horoscope: HoroscopeInfo, modifier: Modifier = Modifier) {
     }
 }
 
-
-@Composable
-fun LuckScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Pantalla de la Suerte", style = MaterialTheme.typography.headlineMedium)
-    }
-}
-
 @Composable
 fun PalmistryScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Pantalla de Quiromancia", style = MaterialTheme.typography.headlineMedium)
-    }
+    com.mauro.composehoroscopo.presentation.palmistry.PalmistryScreen()
 }
-
 
 @Composable
 fun AppBottomNavigationBar(
@@ -210,7 +265,7 @@ fun AppBottomNavigationBar(
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            popUpTo(AppDestinations.HOME_ROUTE) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -238,17 +293,13 @@ fun AppBottomNavigationBar(
     }
 }
 
-
-// --- PREVIEWS ACTUALIZADOS ---
-
+// --- PREVIEWS ---
 
 @Preview(showBackground = true, name = "Main Screen Dark")
 @Composable
 fun MainScreenDarkPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        // CORRECCIÓN 3: Creamos un NavController de prueba aquí, solo para la preview.
         val previewNavController = rememberNavController()
-        // CORRECCIÓN 4: Pasamos el controlador de prueba a nuestra MainScreen.
         MainScreen(navController = previewNavController)
     }
 }
@@ -257,26 +308,31 @@ fun MainScreenDarkPreview() {
 @Composable
 fun MainScreenLightPreview() {
     ComposehoroscopoTheme(darkTheme = false) {
-        // Hacemos lo mismo para la preview con tema claro.
         val previewNavController = rememberNavController()
         MainScreen(navController = previewNavController)
     }
 }
 
-// Esta preview no necesita cambios porque no depende del NavController.
-@Preview(name = "Horoscope Item Vertical")
+@Preview(name = "Horoscope Item")
 @Composable
 fun HoroscopeItemPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        HoroscopeItem(horoscope = HoroscopeInfo.Aries)
+        HoroscopeItem(horoscope = HoroscopeInfo.Aries, onItemClick = {})
     }
 }
 
-// Esta preview no necesita cambios porque no depende del NavController.
-@Preview(showBackground = true, name = "Horoscope Grid Preview")
+@Preview(showBackground = true, name = "Horoscope Grid")
 @Composable
 fun HoroscopeContentPreview() {
     ComposehoroscopoTheme(darkTheme = true) {
-        HoroscopeContent()
+        HoroscopeContent(onHoroscopeClick = {})
+    }
+}
+
+@Preview(showBackground = true, name = "Palmistry Screen")
+@Composable
+fun PalmistryScreenPreview() {
+    ComposehoroscopoTheme(darkTheme = true) {
+        PalmistryScreen()
     }
 }
