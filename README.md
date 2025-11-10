@@ -30,15 +30,15 @@ Una aplicación moderna de astrología desarrollada completamente en **Jetpack C
 ## 🎨 Capturas de Pantalla
 
 <p align="center">
-  <img src="screenshots/screenshot_horoscope.png" width="200" alt="Horoscope Home"/>
-  <img src="screenshots/screenshot_retrofit.png" width="200" alt="Horoscope Detail"/>
-  <img src="screenshots/screenshot_ruleta.png" width="200" alt="Luck Roulette"/>
-  <img src="screenshots/screenshot_luck.png" width="200" alt="Luck Prediction"/>
-  <img src="screenshots/screenshot_palmistry.png" width="200" alt="Palmistry"/>
+  <img src="app/screenshots/screenshot_horoscope.png" width="200" alt="Horoscope Home"/>
+  <img src="app/screenshots/screenshot_retrofit.png" width="200" alt="Horoscope Detail"/>
+  <img src="app/screenshots/screenshot_ruleta.png" width="200" alt="Luck Roulette"/>
+  <img src="app/screenshots/screenshot_luck.png" width="200" alt="Luck Prediction"/>
+  <img src="app/screenshots/screenshot_palmistry.png" width="200" alt="Palmistry"/>
 </p>
 
 ### 🌟 Pantalla Principal - Signos del Zodiaco
-<img src="screenshots/screenshot_horoscope.png" width="250" align="right" alt="Home Screen"/>
+<img src="app/screenshots/screenshot_horoscope.png" width="250" align="right" alt="Home Screen"/>
 
 Muestra los 12 signos del zodiaco en un **LazyVerticalGrid** con diseño responsive. Al hacer clic en cualquier signo:
 - Se ejecuta una **animación de rotación de 360°** usando `Animatable`
@@ -52,7 +52,7 @@ Muestra los 12 signos del zodiaco en un **LazyVerticalGrid** con diseño respons
 ---
 
 ### 📅 Detalle del Horóscopo - Integración con API
-<img src="screenshots/screenshot_retrofit.png" width="250" align="right" alt="Detail Screen"/>
+<img src="app/screenshots/screenshot_retrofit.png" width="250" align="right" alt="Detail Screen"/>
 
 Realiza una **llamada asíncrona a la API REST** mediante Retrofit para obtener la predicción diaria:
 - **Endpoint**: `GET /horoscope/{sign}`
@@ -69,7 +69,7 @@ Realiza una **llamada asíncrona a la API REST** mediante Retrofit para obtener 
 ---
 
 ### 🎰 Ruleta de la Suerte - Inicio de Lectura
-<img src="screenshots/screenshot_ruleta.png" width="250" align="right" alt="Roulette Screen"/>
+<img src="app/screenshots/screenshot_ruleta.png" width="250" align="right" alt="Roulette Screen"/>
 
 Interfaz interactiva con **detección de gestos horizontales**:
 - **Gesto**: Desliza horizontalmente sobre la ruleta para activarla
@@ -87,7 +87,7 @@ Interfaz interactiva con **detección de gestos horizontales**:
 ---
 
 ### 🎴 Predicción del Tarot - Resultado de Lectura
-<img src="screenshots/screenshot_luck.png" width="250" align="right" alt="Luck Prediction"/>
+<img src="app/screenshots/screenshot_luck.png" width="250" align="right" alt="Luck Prediction"/>
 
 Después de girar la ruleta, se ejecuta una secuencia de animaciones:
 
@@ -113,7 +113,7 @@ Después de girar la ruleta, se ejecuta una secuencia de animaciones:
 ---
 
 ### 🤚 Quiromancia - Lectura de Palma
-<img src="screenshots/screenshot_palmistry.png" width="250" align="right" alt="Palmistry Screen"/>
+<img src="app/screenshots/screenshot_palmistry.png" width="250" align="right" alt="Palmistry Screen"/>
 
 Utiliza **CameraX** para análisis de la mano en tiempo real:
 
